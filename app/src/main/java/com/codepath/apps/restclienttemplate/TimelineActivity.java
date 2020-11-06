@@ -33,6 +33,14 @@ public class TimelineActivity extends AppCompatActivity {
 
         swipeContainer = findViewById(R.id.swipeContainer);
 
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.i(TAG, "pull to refresh");
+                populateHomeTimeline();
+            }
+        });
+
         client = TwitterApp.getRestClient(this);
 
         tweets = new ArrayList<>();
@@ -49,9 +57,9 @@ public class TimelineActivity extends AppCompatActivity {
             public void onSuccess(int statusCode, Headers headers, JSON json) {
                 Log.i(TAG, "onSuccess" + json.toString());
                 try {
-                    tweets.addAll(Tweet.fromJsonArray(json.jsonArray));
-                    Log.e(TAG, tweets.size() + "");
-                    adapter.notifyDataSetChanged();
+                    adapter.clear();
+                    adapter.addAll(Tweet.fromJsonArray(json.jsonArray));
+                    swipeContainer.setRefreshing(false);
                 } catch (JSONException e) {
                     Log.e(TAG, "FAILURE", e);
                 }
