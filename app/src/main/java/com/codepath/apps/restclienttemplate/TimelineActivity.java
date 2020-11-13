@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -24,6 +25,7 @@ import okhttp3.Headers;
 public class TimelineActivity extends AppCompatActivity {
     TwitterClient client;
     private static final String TAG = "TIMELINE";
+    public final int REQUEST_CODE = 20;
     RecyclerView rvTweets;
     List<Tweet> tweets;
     TweetsAdapter adapter;
@@ -58,6 +60,9 @@ public class TimelineActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.compose){
             Toast.makeText(getApplicationContext(), "Compose", Toast.LENGTH_SHORT).show();
+            Intent i = new Intent(this, ComposeActivity.class);
+            startActivityForResult(i, REQUEST_CODE);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
