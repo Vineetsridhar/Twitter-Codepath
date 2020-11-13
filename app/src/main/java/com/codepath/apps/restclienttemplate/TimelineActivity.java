@@ -22,6 +22,7 @@ import org.parceler.Parcels;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.paperdb.Paper;
 import okhttp3.Headers;
 
 public class TimelineActivity extends AppCompatActivity {
@@ -47,10 +48,12 @@ public class TimelineActivity extends AppCompatActivity {
                 populateHomeTimeline();
             }
         });
+        Paper.init(this);
+        tweets = Paper.book().read("tweets");
+        if(tweets == null) tweets = new ArrayList<>();
 
         client = TwitterApp.getRestClient(this);
 
-        tweets = new ArrayList<>();
         adapter = new TweetsAdapter(this, tweets);
         rvTweets = findViewById(R.id.rvTweets);
         rvTweets.setLayoutManager(new LinearLayoutManager(this));
@@ -76,6 +79,7 @@ public class TimelineActivity extends AppCompatActivity {
             tweets.add(0, tweet);
             adapter.notifyItemInserted(0);
             rvTweets.smoothScrollToPosition(0);
+            Paper.book().write("tweets", tweets);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -95,6 +99,7 @@ public class TimelineActivity extends AppCompatActivity {
                     adapter.clear();
                     adapter.addAll(Tweet.fromJsonArray(json.jsonArray));
                     swipeContainer.setRefreshing(false);
+                    Paper.book().write("tweets", tweets);
                 } catch (JSONException e) {
                     Log.e(TAG, "FAILURE", e);
                 }
